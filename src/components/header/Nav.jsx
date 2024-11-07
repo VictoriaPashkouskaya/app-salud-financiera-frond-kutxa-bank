@@ -15,7 +15,7 @@ export default function Nav() {
 				</div>
 			</Link>
 
-			<Link className={style.link} to="/hucha">
+			<Link className={style.link} to="/Menu">
 				<div className={style.menu_item}>
 					<picture>
 						<img src="/piggy-bank-svgrepo-com.svg" alt="piggy-bank" />
@@ -26,7 +26,7 @@ export default function Nav() {
 
 			{user ? (
 				<>
-					<Link className={style.link} to="/profile">
+					<Link className={style.link} to="/perfile">
 						<div className={style.menu_item}>
 							<picture>
 								<img src="/profile.svg" alt="piggy-bank" />

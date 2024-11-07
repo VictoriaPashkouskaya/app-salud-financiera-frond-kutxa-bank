@@ -2,8 +2,14 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  margin-top: 50px;
-  background-color: #000000; /* Keep your original background color */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #000000;
+  padding: 10px 0;
+  z-index: 1000;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .menu_item {
@@ -12,46 +18,60 @@
   align-items: center;
   text-align: center;
   cursor: pointer;
-   transition: all 0.3s ease; /* Smooth transition for hover effects */
+  transition: all 0.3s ease;
 }
 
 .link {
-  text-decoration: none; /* Remove underline from links */
-  color: inherit; /* Keep the color consistent */
+  text-decoration: none;
+  color: inherit;
 }
 
 .menu_item picture img {
-  width: 30px; /* Default icon size */
+  width: 30px;
   height: 30px;
-  transition: transform 0.3s ease, color 0.3s ease; /* Smooth icon scaling and color transition */
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .menu_item:hover picture img {
-  transform: scale(1.3); /* Increase icon size on hover */
+  transform: scale(1.3);
 }
 
 .menu_item p {
   margin-top: 5px;
-  font-size: 14px; /* Font size for labels */
+  font-size: 14px;
   font-weight: 600;
-  color: #333; /* Dark gray text color */
-  transition: color 0.3s ease; /* Smooth color change */
+  color: #fff;
+  transition: color 0.3s ease;
 }
 
 .menu_item:hover p {
-  color: #ff4d4f; /* Change text color to red on hover */
+  color: #ff4d4f;
 }
 
 .menu_item:hover {
-  animation: bounce 0.4s; /* Apply bounce effect on hover */
+  animation: bounce 0.4s;
 }
 
-/* Keyframes for bounce animation */
 @keyframes bounce {
   0%, 100% {
-    transform: scale(1); /* Start and end at original size */
+    transform: scale(1);
   }
   50% {
-    transform: scale(1.4); /* Increase size temporarily */
+    transform: scale(1.4);
+  }
+}
+
+@media (max-width: 768px) {
+  .menu {
+    padding: 15px 0;
+  }
+
+  .menu_item picture img {
+    width: 25px;
+    height: 25px;
+  }
+
+  .menu_item p {
+    font-size: 12px;
   }
 }

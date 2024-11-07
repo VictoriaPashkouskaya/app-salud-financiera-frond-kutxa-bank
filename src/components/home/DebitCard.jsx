@@ -1,106 +1,107 @@
 import { useState, useEffect } from 'react';
 import '../../style/chart/DebitCard.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import bankLogo from '../../assets/logo-Kutxabank.svg';
-import antImage from '/src/assets/hormiga.png'; 
+import antImage from '/src/assets/hormiga.png';
 
 const DebitCard = () => {
   const [cardData, setCardData] = useState(null);
-  const [recentTransactions, setRecentTransactions] = useState([]);
-  const [tips, setTips] = useState([]);
-  const [spendingWarning, setSpendingWarning] = useState(null);
+  const [newSavingAmount, setNewSavingAmount] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  // История пополнений
+  const [savingsHistory, setSavingsHistory] = useState([]);
 
-  const fetchCardData = () => {
+  useEffect(() => {
+    // Загрузка данных карты
     const fakeCardData = {
       cardNumber: '1234 5678 9012 3456',
-      cardHolder: 'Juan Pérez',
-      expiryDate: '12/24',
-      balance: '€450',
+      cardHolder: 'Irati Murua Arriaga',
+      balance: '€4500',
       savingsGoal: '€1000',
+      currentSavings: '€450',
       progress: '45%',
     };
     setCardData(fakeCardData);
-  };
-
-  const fetchTransactions = () => {
-    const fakeTransactions = [
-      { id: 1, amount: '-50', description: 'Grocery store purchase' },
-      { id: 2, amount: '-120', description: 'Rent payment' },
-      { id: 3, amount: '-30', description: 'Restaurant dinner' },
-    ];
-    setRecentTransactions(fakeTransactions);
-  };
-
-  useEffect(() => {
-    fetchCardData();
-    fetchTransactions();
   }, []);
 
-  useEffect(() => {
-    if (cardData && recentTransactions.length > 0) {
-      const tipsList = [];
-      if (parseFloat(cardData.balance.replace('€', '')) < 500) {
-        tipsList.push("Your balance is low. Consider saving more to improve your financial security.");
-      }
-      setTips(tipsList);
+  const handleAddSavings = () => {
+    if (newSavingAmount && cardData) {
+      // Создаем новую запись в истории пополнений
+      const newEntry = {
+        id: savingsHistory.length + 1,
+        amount: `+€${newSavingAmount}`,
+        date: new Date().toLocaleString('es-ES'), // Дата и время на испанском
+      };
+      
+      // Обновляем историю пополнений
+      setSavingsHistory([...savingsHistory, newEntry]);
 
-      if (recentTransactions.some(tx => parseFloat(tx.amount) < -100)) {
-        setSpendingWarning("Warning! You have made large expenses this month.");
-      }
+      // Обновляем текущие накопления без изменения основной карты
+      setNewSavingAmount('');
+      setIsEditing(false);
     }
-  }, [cardData, recentTransactions]);
+  };
+
+  const handleEditSavings = () => {
+    setIsEditing(!isEditing);
+  };
 
   if (!cardData) {
-    return <div>Loading...</div>;
+    return <div>Cargando...</div>;
   }
 
   return (
     <div className="debit-card">
-      <img src={antImage} alt="Ant" className="ant" /> {/* Размещаем муравья здесь */}
-      <div className="card-header">Financial Profile</div>
+      <img src={antImage} alt="Hormiga" className="ant" />
+      <div className="card-header">Perfil Financiero</div>
       <div className="card-body">
         <div className="bank-card">
-          <img src={bankLogo} alt="Bank Logo" className="card-logo" />
+          <img src={bankLogo} alt="Logo del banco" className="card-logo" />
           <div className="bank-card-info">
-            <div className="card-item">
-              <span><strong>{cardData.cardNumber}</strong></span>
-            </div>
-            <div className="card-item">
-              <span><strong>{cardData.cardHolder}</strong></span>
-            </div>
-            <div className="card-item">
-              <span><strong>{cardData.expiryDate}</strong> - Expiration</span>
-            </div>
+            <span><strong>{cardData.cardNumber}</strong></span>
+            <span><strong>{cardData.cardHolder}</strong></span>
           </div>
           <div className="balance-info">
             <span className="balance-amount">{cardData.balance}</span>
           </div>
         </div>
 
-        {spendingWarning && (
-          <div className="spending-warning">
-            <h4>{spendingWarning}</h4>
-          </div>
-        )}
-
         <div className="savings-info">
-          <h4>Savings Goal: {cardData.savingsGoal}</h4>
-          <p>Progress: {cardData.progress}</p>
+          <h4>
+            Objetivo de Ahorro: {cardData.savingsGoal}
+            <FontAwesomeIcon
+              icon={faPencilAlt}
+              onClick={handleEditSavings}
+              style={{ marginLeft: '10px', cursor: 'pointer', color: 'blue' }}
+            />
+          </h4>
+          <p>Ahorros Actuales: {cardData.currentSavings}</p>
+          <p>Progreso: {cardData.progress}</p>
           <div className="savings-progress-bar">
             <div className="progress" style={{ width: cardData.progress }}></div>
           </div>
         </div>
 
-        {tips.length > 0 && (
-          <div className="savings-tips">
-            <h4>Personalized Tips:</h4>
-            <ul>
-              {tips.map((tip, index) => (
-                <li key={index}>{tip}</li>
-              ))}
-            </ul>
+        {isEditing && (
+          <div className="add-savings">
+            <input
+              type="number"
+              placeholder="Monto (€)"
+              value={newSavingAmount}
+              onChange={(e) => setNewSavingAmount(e.target.value)}
+            />
+            <button onClick={handleAddSavings}>Añadir</button>
           </div>
         )}
+        <div className="savings-history">
+          <h4>Historia de Ahorros</h4>
+          <ul>
+            {savingsHistory.map(entry => (
+              <li key={entry.id}>{entry.date}: {entry.amount}</li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

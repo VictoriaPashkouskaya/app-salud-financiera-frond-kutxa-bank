@@ -1,75 +1,77 @@
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { login, reset } from '../redux/auth/authSlice';
-import '../../src/style/profile/login.css';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {notification} from 'antd'
-
+import { notification } from 'antd';
+import '../style/profile/login.css'; 
+import logo from '../assets/logo-Kutxabank.svg'; 
 
 const Login = () => {
-	const navigate = useNavigate();
-	const dispatch = useDispatch();
-	
-	const { isError, isSuccess, message } = useSelector((state) => state.auth);
-	useEffect(() => {
-		if (isError) {
-			notification.error({ message: 'Error', description: message });
-		}
-		if (isSuccess) {
-			notification.success({ message: 'Success', description: message });
-			setTimeout(() => {
-				navigate('/');
-			}, 500);
-		}
-		dispatch(reset());
-	}, [isError, isSuccess, message]);
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState({ email: '', password: '' });
+    const { email, password } = formData;
 
-	const [formData, setFormData] = useState({ email: '', password: '' });
-	const { email, password } = formData;
-	const onChange = (e) => {
-		setFormData((prevState) => ({
-			...prevState,
-			[e.target.name]: e.target.value,
-		}));
-	};
+    const mockUser = {
+        email: 'test@example.com',
+        password: '123456'
+    };
 
-	const onSubmit = (e) => {
-		e.preventDefault();
-		console.log('Email:', formData.email);
-		dispatch(login(formData));
-	};
+    const onChange = (e) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            [e.target.name]: e.target.value,
+        }));
+    };
 
-	return (
-		<>
-			<section className="login-container">
-				<h1>Te damos la bienvenida</h1>
-				<p>
-					Para acceder a todas las funcionalidades, por favor introduce tu email
-					y contraseña.
-				</p>
+    const onSubmit = (e) => {
+        e.preventDefault();
 
-				<form onSubmit={onSubmit}>
-					<input
-						type="email"
-						name="email"
-						placeholder="Email"
-						value={email}
-						onChange={onChange}
-					/>
+        if (email === mockUser.email && password === mockUser.password) {
+            notification.success({ message: 'Éxito', description: '¡Inicio de sesión exitoso!' });
+            localStorage.setItem('user', JSON.stringify(formData));
+            setTimeout(() => {
+                navigate('/home');
+            }, 500);
+        } else {
+            notification.error({ message: 'Error', description: 'Credenciales incorrectas' });
+        }
+    };
 
-					<input
-						type="password"
-						name="password"
-						placeholder="Contraseña"
-						value={password}
-						onChange={onChange}
-					/>
-					<p>
-						<button type="submit">Login</button>
-					</p>
-				</form>
-			</section>
-		</>
-	);
+    return (
+        <div className="login-container">
+            <img src={logo} alt="Bank Logo" className="bank-logo" />
+            <h1>Bienvenido</h1>
+            <p>Ingrese su número de cuenta y contraseña para acceder a su cuenta.</p>
+
+            <form onSubmit={onSubmit}>
+                <input
+                    type="text"
+                    name="email"
+                    placeholder="Número de cuenta"
+                    value={email}
+                    onChange={onChange}
+                    required
+                />
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Contraseña"
+                    value={password}
+                    onChange={onChange}
+                    required
+                />
+                <button type="submit">Iniciar Sesión</button>
+            </form>
+            <div className="biometric-login">
+                <button className="biometric-button" onClick={() => {
+                    notification.success({ message: 'Éxito', description: '¡Inicio de sesión con Face ID exitoso!' });
+                    setTimeout(() => {
+                        navigate('/home');
+                    }, 500);
+                }}>
+                    Iniciar sesión con Face ID
+                </button>
+            </div>
+        </div>
+    );
 };
+
 export default Login;
